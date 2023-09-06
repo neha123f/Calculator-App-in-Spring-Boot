@@ -1,0 +1,43 @@
+name: together
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: repo
+        uses: actions/checkout@v2
+
+      - name: Cache Java and Node.js installations
+        id: cache-java-node
+        uses: actions/cache@v2
+        with:
+          path: |
+            ${{ runner.tool_cache }}/Java/*/x64  # Use runner.tool_cache for Java
+            ${{ runner.tool_cache }}/Node.js/*/x64  # Use runner.tool_cache for Node.js
+          key: java-node-${{ runner.os }}-${{ hashFiles('**/*.yml') }}
+          restore-keys: java-node-
+
+      - name: Install Java
+        if: ${{ steps.cache-java-node.outputs.cache-hit != 'true' }}
+        id: install-java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: Check default Java version
+        run: java -version
+
+
+      - name: Install Node.js
+        if: ${{ steps.cache-java-node.outputs.cache-hit != 'true' }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14' # Change this to your desired Node.js version
+
+      - name: Check default Node.js version
+        run: node -v
