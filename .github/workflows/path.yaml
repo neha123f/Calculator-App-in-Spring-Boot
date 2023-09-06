@@ -38,18 +38,17 @@ jobs:
       - name: Check installed/cached Java version
         run: |
           java -version
-      - name: Build with Maven
 
+          
+      - name: Build with Maven
+        if: steps.maven-cache.outputs.cache-hit != 'true'
         run: mvn clean package
 
  
-
       - name: Cache Maven artifacts
-
+        id: maven-cache
         uses: actions/cache@v2
-
         with:
-
           path: |
             ~/.m2/repository
           key: maven-artifacts-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
