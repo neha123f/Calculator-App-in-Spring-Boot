@@ -1,43 +1,52 @@
-name: together
+name: Install Java 17 and Node.js 14 with Cache
+
+ 
 
 on:
   workflow_dispatch:
+
+ 
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
+ 
+
     steps:
-      - name: repo
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Cache Java and Node.js installations
-        id: cache-java-node
+ 
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17
+
+ 
+
+      - name: Set up Node.js 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+ 
+
+      - name: Cache installations
         uses: actions/cache@v2
         with:
           path: |
-            ${{ runner.tool_cache }}/Java/*/x64  # Use runner.tool_cache for Java
-            ${{ runner.tool_cache }}/Node.js/*/x64  # Use runner.tool_cache for Node.js
-          key: java-node-${{ runner.os }}-${{ hashFiles('**/*.yml') }}
+            ${{ runner.tool_cache }}
+          key: java-node-${{ runner.os }}-${{ hashFiles('**/*.yaml') }}
           restore-keys: java-node-
 
-      - name: Install Java
-        if: ${{ steps.cache-java-node.outputs.cache-hit != 'true' }}
-        id: install-java
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '17'
+ 
 
-      - name: Check default Java version
+      - name: Show Java version
         run: java -version
 
+ 
 
-      - name: Install Node.js
-        if: ${{ steps.cache-java-node.outputs.cache-hit != 'true' }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14' # Change this to your desired Node.js version
-
-      - name: Check default Node.js version
+      - name: Show Node.js version
         run: node -v
