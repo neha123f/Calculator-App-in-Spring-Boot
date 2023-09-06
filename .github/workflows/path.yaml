@@ -41,6 +41,7 @@ jobs:
 
  
       - name: Cache Maven artifacts
+        id: mavenCacheStep
         uses: actions/cache@v2
         with:
           path: |
@@ -49,4 +50,5 @@ jobs:
 
 
       - name: Build with Maven
+        if: steps.mavenCacheStep.outputs.cache-hit != 'true'
         run: mvn clean package
