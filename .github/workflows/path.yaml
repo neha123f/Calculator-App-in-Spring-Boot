@@ -33,7 +33,7 @@ jobs:
         run: java -version
 
       - name: Set installed/cached Java path
-        run: echo "JAVA_HOME=${{ runner.tool_cache }}/Java/*/x64\bin" >> $GITHUB_ENV
+        run: echo "JAVA_HOME=${{ env.JAVA_HOME }}" >> $GITHUB_ENV
 
       - name: Check installed/cached Java version
         run: |
