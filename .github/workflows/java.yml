@@ -1,36 +1,39 @@
-name: cache_java
-
-on:
-  workflow_dispatch:
+name: dotnet-pipeline
+on: workflow_dispatch
 
 jobs:
   build:
+    name: Build-run-analysis
     runs-on: windows-2022
-
+  
     env:
+      JAVA_HOME: 'C:\hostedtoolcache\windows\Java_Microsoft_jdk\17.0.3\x64'
       JAVA_HOME_17_X64: 'C:\hostedtoolcache\windows\Java_Microsoft_jdk\17.0.3\x64'
-
-    steps:
+     
+    steps:  
+    
       - name: Cache JDK
         id: cache-jdk
         uses: actions/cache@v3
         with:
-          path: ${{ env.JAVA_HOME_17_X64 }}
+          path: ${{ env.JAVA_HOME }}
           key: ${{ runner.os }}-jdk-17
-          restore-keys: ${{ runner.os }}-jdk-
-
+          restore-keys: |
+            ${{ runner.os }}-jdk-
+  
+      # Install Java development kit using microsoft distro
       - name: Install Java
-        if: ${{ steps.cache-jdk.outputs.cache-hit != 'true' }}
+        if: steps.cache-jdk.outputs.cache-hit != 'true'
         uses: actions/setup-java@v3
         with:
           distribution: 'microsoft'
           java-version: '17'
+          check-latest: false # enforce to use files from cache
+        
+      - name: Set PATH
+        run: |
+          echo "${{ env.JAVA_HOME }}" | Out-File -FilePath $ENV:GITHUB_PATH -Encoding utf8 -Append      
 
-      - name: Check default Java version
-        run: java -version
 
-      - name: Set installed/cached Java path [${{ env.JAVA_HOME_17_X64 }}]
-        run: echo "${{ env.JAVA_HOME_17_X64 }}\bin" | Out-File -FilePath $ENV:GITHUB_PATH -Encoding utf8 -Append
-
-      - name: Check installed/cached Java version
+      - name: check version
         run: java -version
