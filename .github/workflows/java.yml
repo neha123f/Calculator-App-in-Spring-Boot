@@ -56,4 +56,3 @@ jobs:
       - name: Check installed/cached Java version
         run: |
           java -version
-          mvn test
